@@ -201,13 +201,19 @@ if st.session_state.role == "Admin":
         if status_filter != "All":
             filtered_df = filtered_df[filtered_df['status'] == status_filter]
 
-        # ✅ SAFE TABLE (FIXED)
-        st.dataframe(filtered_df)
+        # ✅ STATUS COLORS FIXED
+        def color_status(val):
+            return "🔴 Pending" if val == "Pending" else "🟢 Resolved"
+
+        display_df = filtered_df.copy()
+        display_df["status"] = display_df["status"].apply(color_status)
+
+        st.dataframe(display_df)
 
         # Search
         search = st.text_input("Search complaint")
         if search:
-            st.dataframe(filtered_df[filtered_df['complaint'].str.contains(search, case=False)])
+            st.dataframe(display_df[display_df['complaint'].str.contains(search, case=False)])
 
         # Update
         if len(filtered_df) > 0:
